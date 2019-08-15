@@ -36,6 +36,8 @@ class AbstractChosen
     @max_shown_results = @options.max_shown_results || Number.POSITIVE_INFINITY
     @case_sensitive_search = @options.case_sensitive_search || false
     @hide_results_on_select = if @options.hide_results_on_select? then @options.hide_results_on_select else true
+    #The unique_id is used to identify this chosen dropdown in the DOM for accessibility ARIA attributes
+    @unique_id = "chosen-id-#{Math.random().toString(36).substring(2,6)}"
 
   set_default_text: ->
     if @form_field.getAttribute("data-placeholder")
@@ -113,8 +115,11 @@ class AbstractChosen
     classes.push option.classes if option.classes != ""
 
     option_el = document.createElement("li")
+    option_el.id = "#{@unique_id}-#{option.array_index}"
     option_el.className = classes.join(" ")
     option_el.style.cssText = option.style if option.style
+    option_el.setAttribute("role", "option")
+    option_el.setAttribute("tabindex", "-1")
     option_el.setAttribute("data-option-array-index", option.array_index)
     option_el.innerHTML = option.highlighted_html or option.html
     option_el.title = option.title if option.title
@@ -339,7 +344,7 @@ class AbstractChosen
         <div class="chosen-search">
           <input class="chosen-search-input" type="text" autocomplete="off" />
         </div>
-        <ul class="chosen-results"></ul>
+        <ul class="chosen-results" role="listbox" tabindex="-1"></ul>
       </div>
     """
 
@@ -351,7 +356,7 @@ class AbstractChosen
         </li>
       </ul>
       <div class="chosen-drop">
-        <ul class="chosen-results"></ul>
+        <ul class="chosen-results" role="listbox" tabindex="-1"></ul>
       </div>
     """
 

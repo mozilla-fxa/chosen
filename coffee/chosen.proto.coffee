@@ -30,6 +30,15 @@ class @Chosen extends AbstractChosen
 
     @search_field = @container.down('input')
     @search_results = @container.down('ul.chosen-results')
+    @search_results.writeAttribute('id', @unique_id + "-" + "listbox")
+    @search_results.writeAttribute('attr-labelledby', @unique_id)
+    @search_field.writeAttribute(
+      'id': @unique_id
+      'role': 'combobox'
+      'aria-haspopup': 'true'
+      'aria-owns': @search_results.readAttribute('id')
+      'aria-expanded': 'false'
+    )
     this.search_field_scale()
 
     @search_no_results = @container.down('li.no-results')
@@ -213,6 +222,8 @@ class @Chosen extends AbstractChosen
 
       @result_highlight = el
       @result_highlight.addClassName "highlighted"
+      # @search_results.writeAttribute('aria-labelledby', el.readAttribute('id'))
+      @search_field.writeAttribute('aria-activedescendant', el.readAttribute('id'))
 
       maxHeight = parseInt @search_results.getStyle('maxHeight'), 10
       visible_top = @search_results.scrollTop
@@ -236,6 +247,7 @@ class @Chosen extends AbstractChosen
       return false
 
     @container.addClassName "chosen-with-drop"
+    @search_field.writeAttribute("aria-expanded", true)
     @results_showing = true
 
     @search_field.focus()
@@ -252,6 +264,7 @@ class @Chosen extends AbstractChosen
       this.result_clear_highlight()
 
       @container.removeClassName "chosen-with-drop"
+      @search_field.writeAttribute("aria-expanded", false)
       @form_field.fire("chosen:hiding_dropdown", {chosen: this})
 
     @results_showing = false

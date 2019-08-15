@@ -52,6 +52,16 @@ class Chosen extends AbstractChosen
 
     @search_field = @container.find('input').first()
     @search_results = @container.find('ul.chosen-results').first()
+
+    @search_results.attr('id', @unique_id + "-" + "listbox")
+    @search_results.attr('attr-labelledby', @unique_id)
+    @search_field.attr(
+      'id': @unique_id
+      'role': 'combobox'
+      'aria-haspopup': 'true'
+      'aria-owns': @search_results.attr('id')
+      'aria-expanded': 'false'
+    )
     this.search_field_scale()
 
     @search_no_results = @container.find('li.no-results').first()
@@ -221,6 +231,8 @@ class Chosen extends AbstractChosen
 
       @result_highlight = el
       @result_highlight.addClass "highlighted"
+      # @search_results.attr('aria-labelledby', el.attr('id'))
+      @search_field.attr('aria-activedescendant', el.attr('id'))
 
       maxHeight = parseInt @search_results.css("maxHeight"), 10
       visible_top = @search_results.scrollTop()
@@ -244,6 +256,7 @@ class Chosen extends AbstractChosen
       return false
 
     @container.addClass "chosen-with-drop"
+    @search_field.attr("aria-expanded", true)
     @results_showing = true
 
     @search_field.focus()
@@ -260,6 +273,7 @@ class Chosen extends AbstractChosen
       this.result_clear_highlight()
 
       @container.removeClass "chosen-with-drop"
+      @search_field.attr("aria-expanded", false)
       @form_field_jq.trigger("chosen:hiding_dropdown", {chosen: this})
 
     @results_showing = false
